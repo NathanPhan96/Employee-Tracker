@@ -4,15 +4,15 @@ const { viewRoles } = require("./roles");
 async function viewEmployees() {
    try{ 
     const employee = 
-     await db.query("SELECT * FROM employee LEFT JOIN role ON role.id = employee.role_id")
+    await db.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, employee.manager_id FROM employee LEFT JOIN role ON role.id = employee.role_id")
         return employee
     } catch (err){
     console.log(err)
     }
 }
-async function updateEmployee(){
 
-}
+
+
 async function addEmployee(){
     try {
         const roles = await viewRoles();
@@ -71,4 +71,67 @@ async function addEmployee(){
     }
     }
     
-    module.exports = { viewEmployees, addEmployee, updateEmployee }
+    async function updateEmployee() {
+        try {
+          const currentEmployees = await viewEmployees();
+          const employeeRoles = await viewRoles();
+          const { employee, newRole } = await inquirer.prompt([
+            {
+              type: "list",
+              name: "employee",
+              message: "Select an employee that you would like to update!",
+              choices: currentEmployees.map((e) => {
+                return {
+                  name: `${e.first_name}, ${e.last_name}`,
+                  value: e.id,
+                };
+              }),
+            },
+            {
+              type: "list",
+              name: "newRole",
+              message: `Select the employee's new role to be updated with`,
+              choices: employeeRoles.map((role) => {
+                return {
+                  name: role.title,
+                  value: role.id,
+                };
+              }),
+            },
+          ]);
+    
+          await db.query(
+            `UPDATE employee SET role_id = ${newRole} WHERE id = ${employee}`
+          );
+          const updatedEmployee = await viewEmployees();
+          return await updatedEmployee;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    
+      async function removeEmployee() {
+        try{
+            const currentEmployees = await viewEmployees();
+            const { id } = await inquirer.prompt([
+                {
+                    type: 'list',
+                    message: "Which employee would you like to remove from the database?",
+                    name: 'id',
+                    choices: currentEmployees.map(employee => {
+                        return {
+                            name: `${employee.first_name}, ${employee.last_name}`,
+                            value : employee.id,
+                        };
+    
+                    }),
+                },
+            ]);
+            await db.query(`DELETE FROM employee WHERE id = ${id}`);
+            return await viewEmployees(); 
+        } catch (err) {
+            console.log(err);
+        }
+        }
+    
+    module.exports = { viewEmployees, addEmployee, updateEmployee, removeEmployee }

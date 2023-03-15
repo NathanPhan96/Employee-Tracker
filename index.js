@@ -1,8 +1,8 @@
 const { prompt } = require("inquirer");
 const db = require("./db/connection");
-const { viewDepartments, addDepartment } = require("./db/departments");
-const { viewEmployees, addEmployee, updateEmployee } = require("./db/employees");
-const { viewRoles, addRole } = require("./db/roles");
+const { viewDepartments, addDepartment, removeDepartment } = require("./db/departments");
+const { viewEmployees, addEmployee, updateEmployee, removeEmployee } = require("./db/employees");
+const { viewRoles, addRole, removeRole } = require("./db/roles");
 
 
 
@@ -21,7 +21,10 @@ const start = async (s) => {
                 "Add a Role",
                 "Add an Employee",
                 "Update an Employee",
-                "Exit"
+                "Remove an Employee",
+                "Delete a Department",
+                "Delete a Role",
+                "Exit",
                 ]
         }
     ])
@@ -53,8 +56,20 @@ const start = async (s) => {
                     break;
                 case "Update an Employee":
                     const updatedEmployee = await updateEmployee()
-                    console.table(newEmployees)
+                    console.table(updatedEmployee)
                     break;
+                case "Remove an Employee":
+                     const removedEmployee = await removeEmployee()
+                     console.table(removedEmployee)
+                     break;
+                case "Delete a Department":
+                    const removedDepartment = await removeDepartment()
+                    console.table(removedDepartment)
+                    break;
+                    case "Delete a Role":
+                        const removedRole = await removeRole()
+                        console.table(removedRole)
+                        break;
             case "Exit":
                 console.log("Goodbye!");
                 process.exit();
