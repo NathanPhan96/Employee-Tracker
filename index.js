@@ -1,8 +1,8 @@
 const { prompt } = require("inquirer");
 const db = require("./db/connection");
 const { viewDepartments, addDepartment } = require("./db/departments");
-const { viewEmployees, addEmployee } = require("./db/employees");
-const { viewRoles } = require("./db/roles");
+const { viewEmployees, addEmployee, updateEmployee } = require("./db/employees");
+const { viewRoles, addRole } = require("./db/roles");
 
 
 
@@ -47,6 +47,14 @@ const start = async (s) => {
                 const newDepartment = await addDepartment()
                 console.table(newDepartment)
                 break;
+                case "Add a Role":
+                    const newRole = await addRole()
+                     console.table(newRole)
+                    break;
+                case "Update an Employee":
+                    const updatedEmployee = await updateEmployee()
+                    console.table(newEmployees)
+                    break;
             case "Exit":
                 console.log("Goodbye!");
                 process.exit();

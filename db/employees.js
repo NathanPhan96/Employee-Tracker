@@ -10,14 +10,19 @@ async function viewEmployees() {
     console.log(err)
     }
 }
+async function updateEmployee(){
 
+}
 async function addEmployee(){
     try {
         const roles = await viewRoles();
+        const employees = await viewEmployees();
         const {
         firstName,
         lastName,
         role,
+        manager
+
         } = await inquirer.prompt([
     {
         type : "input",
@@ -39,16 +44,31 @@ async function addEmployee(){
                 name : role.title
             };
         }),
-    
+    },  
+{ 
+    type : "list",
+    name : "manager",
+    message: "Who is the employee's manager?",
+    choices: [
+         ...employees.map(employee => {
+        return {
+            value: employee.id,
+            name : `${employee.firstName} ${employee.lastName}`
+        };
+}),
+{
+    value : null,
+    name : "No manager"
     }
-    
+]
+}
     ])
-     await db.query(`INSERT into employee (first_name, last_name, role_id) VALUES ( "${firstName}", "${lastName}," "${role}") `)
+    await db.query(`INSERT into employee (first_name, last_name, role_id) VALUES ( "${firstName}", "${lastName}," "${role}", "${manager}") `)
      const newEmployees = await viewEmployees()
-     return `${firstName} ${lastName} ${role}`
+     return newEmployees
     }catch (err) {
         console.log (err)
     }
     }
     
-    module.exports = { viewEmployees, addEmployee }
+    module.exports = { viewEmployees, addEmployee, updateEmployee }
